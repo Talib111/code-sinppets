@@ -1,0 +1,191 @@
+{
+	// Place your snippets for javascript here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+
+	//====1====
+	"demo auth": {
+		"prefix": "nodeauth",
+		"body": [
+			// "console.log('$1');",
+			"const Admin_pass = require('../models/Admin');",
+			"const bcrypt = require('bcrypt');",
+			"const saltRounds = 10;",
+			"var jwt = require('jsonwebtoken');",
+			"const { SECRET } = require('../utils/secret');\n\n",
+			
+			
+			//this signup is normal signup and not specifically related to passport
+			
+			"const adminSignUp =  (req, res) => {",
+				"\tconst { name, email, password } = req.body;",
+				//=====Exist code================//
+				
+				//===========/Exist code===============//
+				"\tbcrypt.genSalt(saltRounds, function (err, salt) {",
+					"\t\tif (err) throw err;",
+					"\t\tbcrypt.hash(password, salt, async function (err, hash) {",
+						"\t\t\tif (err) throw err;",
+						"\t\t\tconst admin = await new Admin_pass({",
+							"\t\t\t\tname,",
+							"\t\t\t\temail,",
+							"\t\t\t\tpassword: hash,",
+						"\t\t}).save();",
+			
+						"\t\t\treturn res.json({",
+							"\t\t\t\terror: false,",
+							"\t\t\t\tmessage: 'admin created',",
+							"\t\t\t\tpayload: admin,",
+						"\t\t\t});",
+					"\t\t});",
+				"\t});",
+			"};\n\n",
+			
+			"const adminSignIn = async (req, res) => {",
+				"\tconst { email, password } = req.body;",
+				//await will wait until return any promise to execute next code
+				"\tconst admin = await Admin_pass.findOne({",
+					"email,",
+				"\t});",
+			
+				"\tif (!admin)",
+					"\t\treturn res.json({",
+						"\t\terror: true,",
+						"\t\tmessage: 'no admin found',",
+					"\t\t});",
+			
+				"\tbcrypt.compare(password, admin.password, async function (err, result) {",
+					"\t\tif (err) throw err;",
+			
+					"\t\tif (!result)",
+						"return res.json({",
+							"error: true,",
+							"message: 'password not matched',",
+						"\t\t});",
+			
+					//genrating access token to send to client side to saving in local-storage for futher signup
+					"\t\tvar token = await jwt.sign({ _id: admin._id, name: admin.name }, SECRET,{",
+						"expiresIn: '3d'",
+					"\t\t});",
+					"\t\treturn res.json({",
+						"\t\t\terror: false,",
+						"\t\t\tmessage: 'signin successfully',",
+						"\t\t\tpayload: token,",
+					"\t\t});",
+				"\t});",
+			"};",
+			"module.exports = {",
+				"\tadminSignIn,",
+				"\tadminSignUp,",
+			"};"
+			
+		],
+		"description": "showing demo sinppets to talib"
+	},
+
+	//====2====
+
+	"node index page": {
+		"prefix": "nodeindex",
+		"body": [
+			"var exp = require('express');",
+			"var cors = require('cors');",
+			"const passport = require('passport');",
+			
+			"require('./db/conn');",
+			
+			"const app = exp();",
+			
+			"var port = process.env.PORT || 3000;\n",
+			
+			"app.use(cors());",
+			
+			"app.use(exp.json());\n",
+			
+			"require('./src/utils/adminRole');",
+			"require('./src/utils/userRole');\n",
+			
+			"const adminRoute = require('./src/routes/admin');",
+			"const save_Data = require('./src/routes/save_data')",
+			"app.use('/admin', adminRoute);",
+			"app.use('/products',save_Data);\n\n",
+			
+			
+			
+			
+			"app.listen(port, () => {",
+				"\tconsole.log(`nodes js is listening at ${port}`);",
+			"});"
+			
+		],
+		"description": "demo 2"
+	},
+
+	//====3====
+
+	"node databse connection": {
+		"prefix": "nodedb",
+		"body": [
+			"var mongoose = require('mongoose');\n\n",
+			"mongoose.connect('mongodb://localhost:27017/jh_stock', {useCreateIndex: true,useNewUrlParser: true, useUnifiedTopology: true});"
+			
+		],
+		"description": "demo 2"
+	},
+
+	//====4====
+
+	"node routes": {
+		"prefix": "noderoutes",
+		"body": [
+			"const express = require('express');",
+			"const { adminSignUp, adminSignIn } = require('../controller/admin');",
+			"const router = express.Router();\n",
+			
+			"router.post('/signup', adminSignUp);",
+			"router.post('/signin', adminSignIn);\n",
+			
+			"module.exports = router;"
+			
+			
+		],
+		"description": "demo 2"
+	},
+
+	//====5====
+
+	"node model": {
+		"prefix": "nodemodel",
+		"body": [
+			"const mongoose = require('mongoose');",
+			"const validator = require('validator');\n",
+			
+			"const AdminSchema = new mongoose.Schema({",
+				"\tname: {",
+					"\t\ttype: String,",
+					"\t\trequired: true,",
+				"\t},",
+				"\temail: {",
+					"\t\ttype: String,",
+					"\t\trequired: true,",
+				"\t},",
+				"\tpassword: {",
+					"\t\ttype: String,",
+					"\t\trequired: true,",
+				"\t},",
+				"\trole: {",
+					"\t\ttype: Number,",
+					"\t\tdefault: 0,",
+				"\t},",
+			"});\n",
+			
+			"module.exports = Admin_pass = new mongoose.model('admin_pass', AdminSchema);",
+			
+			
+			
+		],
+		"description": "demo 2"
+	}
+}
