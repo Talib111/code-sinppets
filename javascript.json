@@ -361,5 +361,75 @@
 			
 		],
 		"description": "javascript ajax request"
+	},
+
+	//====11====
+
+	"db in next": {
+		"prefix": "nextdb",
+		"body": [
+			"import mongoose from 'mongoose'",
+
+
+			"const MONGODB_URI = process.env.MONGODB_URI",
+			
+			"if (!MONGODB_URI) {",
+			 " throw new Error(",
+				"'Please define the MONGODB_URI environment variable inside .env.local'",
+			  ")",
+			"}",
+			
+			"let cached = global.mongoose",
+			
+			"if (!cached) {",
+			  "cached = global.mongoose = { conn: null, promise: null }",
+			"}",
+			
+			"async function dbConnect () {",
+			  "if (cached.conn) {",
+				"return cached.conn",
+			  "}",
+			
+			  "if (!cached.promise) {",
+				"const opts = {",
+				 " useNewUrlParser: true,",
+				  "useUnifiedTopology: true,",
+				  "bufferCommands: false",
+				"}",
+			
+				"cached.promise = mongoose.connect(MONGODB_URI, opts).then(mongoose => {",
+				  "return mongoose",
+				"})",
+			  "}",
+			  "cached.conn = await cached.promise",
+			  "return cached.conn",
+			"}",
+			
+			"export default dbConnect"
+			
+			
+			
+		],
+		"description": "javascript ajax request"
+	},
+
+	//====11====
+
+	"schema in next": {
+		"prefix": "nextschema",
+		"body": [
+			"import mongoose from 'mongoose'",
+
+			"const UserSchema = new mongoose.Schema({",
+			  "name: String,",
+			 " email: String",
+			"})",
+			
+			"module.exports = mongoose.models.User || mongoose.model('User', UserSchema)"
+			
+			
+			
+		],
+		"description": "next schema"
 	}
 }
