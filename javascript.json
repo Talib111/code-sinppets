@@ -431,5 +431,48 @@
 			
 		],
 		"description": "next schema"
+	},
+	//====11====
+
+	"https request": {
+		"prefix": "nodehttp",
+		"body": [
+			"let xhttp = new XMLHttpRequest();",
+			"xhttp.onreadystatechange = function () {",
+			  "if (this.readyState == 4 && this.status == 200) {",
+	  
+				"console.log('inside useffect ',JSON.parse(this.responseText))",
+				"let customergotdata = JSON.parse(this.responseText)",
+				"setCustomerDataAr(customergotdata.customerData)",
+			"setUserAllData(customergotdata)",
+			   
+			"}",
+			"}",
+			"xhttp.open('POST', 'http://localhost:5500/data/getuser', true);",
+			"xhttp.setRequestHeader('Content-Type', 'application/json');",
+			"xhttp.send(JSON.stringify({_id:'user3'}));"
+			
+			
+			
+		],
+		"description": "next schema"
+	},
+
+	// fetch api
+
+	"fetch api": {
+		"prefix": "nodefetch",
+		"body": [
+			"async function fetchText() {",
+				"let response = await fetch('https://reqres.in/api/users', {method: 'POST',headers: {'Accept': 'application/json','Content-Type': 'application/json'},body: JSON.stringify({a: 1, b: 'Textual content'})})",
+				
+				",let data = await response.text();",
+				",console.log(data);",
+			"}"
+			
+			
+			
+		],
+		"description": "fetch api"
 	}
 }
